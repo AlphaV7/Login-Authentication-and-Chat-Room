@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>  
+ 	<title>IO Chat</title>
+  	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"> 
+  	<script src="/socket.io/socket.io.js"></script>
+  	<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+  	
+  	<script>
+  		
+  		var socket = io.connect();
+
+  		socket.emit('new user','<%=username%>');
+
+	  	function sendFunction() {
+    		socket.emit('new message', '<%= username%> : '+ $('#new-message').val());
+    		$('#new-message').val('');
+	  	}
+  
+		  socket.on('chat message', function(msg){
+	    	$('#messages-area').append('<div class="well">'+msg.msg+'</div>');
+  		});
+
+  		socket.on('get users',function(data){
+  			$('#users').empty();
+  	
+  			var uniq = data.slice().sort(function(a,b){return a > b}).reduce(function(a,b){if (a.slice(-1)[0] !== b) a.push(b);return a;},[]);
+	  	
+  			for(var i=0;i<uniq.length;i++)
+	  			$('#users').append('<h4>'+ uniq[i] + '</h4>');
+  		});
+  
+  	</script>
+</head>  
+
+<body>  
+
+	<div class = "row">
+	</div>
+	<div class="container">
+    	<div class="page-header">  <h2>IO Chat</h2> 
+        <div class="col-md-8"></div>
+        <a href="/logout" class="btn btn-info" role="button">Logout</a>
+      </div>
+    	<div class="row">
+    		<div class = "col-md-4">
+				<div class="well">
+					<h3>Online Users</h3>
+					<ul class = "list-group" id="users"></ul>
+				</div>
+			</div>
+      		
+      		<div class="col-md-8">
+        		
+        		<ul id="messages-area" class="list-group"></ul>
+        		<nav class="navbar navbar-default navbar-fixed-bottom">
+    				
+    				<div class="container-fluid">
+    					<form class="navbar-form" id="form" onsubmit="return false;">
+        			
+        					<div class="form-group"  style="width:83%">
+	          					<label><%= username%></label>
+    	      					<input id="new-message" type="text" class="form-control" placeholder="Search" style="width:80%">
+        					</div>
+        			
+        					<button type="submit" class="btn btn-primary" onclick="sendFunction()" style="width:16%">Send</button>
+        			
+        				</form>
+			    	</div>
+    			
+    			</nav>
+      		
+      		</div>
+    	
+    	</div>
+  	
+  	</div>
+
+</body>
+
+</html>

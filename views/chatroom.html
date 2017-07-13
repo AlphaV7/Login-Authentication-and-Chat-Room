@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>IO Chat</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"> 
+	<script src="/socket.io/socket.io.js"></script>
+  	<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+  	<script>
+  		
+  	</script>
+</head>
+<body>	
+<div class = "container">
+	<div class = "row">
+		<div class = "col-md-4">
+			<div class = "well">
+				<h3>Online Users</h3>
+				<ul class = "list-group" id ="users"></ul>
+			</div>
+		</div>
+		<div class = "col-md-8">
+			<div class = "chat" id="char"></div>
+
+			<form id = "messageForm">
+				<div class = "form-group">
+					<label>Enter Message</label>
+					<textarea class="form-control" id="message"></textarea>
+					<br/>
+					<input type="submit" class = "btn btn-primary" value="Send Message">
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+</body>
+</html>>
