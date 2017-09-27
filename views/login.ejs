@@ -3,23 +3,43 @@
 <html>
 <head>
 	<title>Node Authentication</title>
-	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css"> <!-- load bootstrap css -->
-	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css"> <!-- load fontawesome -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"> 
+  	<script src="/socket.io/socket.io.js"></script>
+  	<script src="//code.jquery.com/jquery-1.11.3.min.js"></script><!-- load fontawesome -->
 	<style>
 		body 		{ padding-top:80px; }
 	</style>
 	<script>
+
+		var socket = io.connect();
+
+		var dec = true;
 		function validate(){
 			var name = document.getElementById('var1').value;
 			var pass = document.myform.password.value;
 			if(name == "" || name == null){
 				alert('Username cannot be Null');
+				document.myform.username.value = "";
+				document.myform.password.value = "";
 				return false;
 			}
-			if(pass.length == 0){
+			else if(pass.length == 0){
 				alert('Password field is Empty ');
+				document.myform.username.value = "";
+				document.myform.password.value = "";
 				return false;
+			}else{
+
+				socket.emit('Validate User',{username:name , password:pass});
+						
+				socket.on('Authentication',function(data){
+					
+					console.log(data.val + ' , ');
+					dec = data.val;
+				});
 			}
+			console.log(dec);
+			return dec;
 		}
 	</script>
 </head>

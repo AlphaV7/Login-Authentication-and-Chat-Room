@@ -104,8 +104,11 @@ module.exports.Controller = function(app){
                     req.session.success = 'Authenticated as ' + user.username +
                                           ' click to <a href="/logout">logout</a>. ' + 
                                           ' You may now access <a href="/restricted">/restricted</a>.'; 
+                    console.log('SessionID  : '+ req.sessionID + '\nexpiers on : ' + new Date(Date.now()+req.session.cookie.maxAge));
                     return res.redirect('/');
+                    res.next();
                 });
+
             }
             if(err){
                 req.session.error = 'Authentication failed , please check your username and password';
@@ -127,6 +130,7 @@ module.exports.Controller = function(app){
                 req.session.user = null;
                 req.session.message = 'Username Already Exists ';
                 return res.redirect('/');
+                res.next();
                 // call return res.next() after redirect;
             }else{
                 hash(password,function(err,salt,hash){
@@ -149,6 +153,7 @@ module.exports.Controller = function(app){
                                                           + ' click to <a href="/logout">logout</a>. ' 
                                                           + ' You may now access <a href="/restricted">/restricted</a>.';
                                     return res.redirect('/');
+                                    res.next();
                                 });
                             }
                         });

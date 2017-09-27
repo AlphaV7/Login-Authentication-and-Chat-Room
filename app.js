@@ -23,7 +23,8 @@
 	app.use(express.session({
 			secret : 'Authentication Tutorial ' ,
 			saveUninitialized: true ,
-			resave : true
+			resave : true,
+			cookie : {maxAge : 60000000}
 	}));
 	app.set('views', __dirname + '/views');
 	app.use('view engine','ejs');
@@ -46,6 +47,28 @@
 		console.log("Connection Successful");
 
 	});
+
+	function authenticate(name,pass,fn){
+
+        if(!module.parent) console.log("authenticating %s %s ",name,pass);
+
+        User.findOne({username : name},function(err,user){
+            if(user){
+                if(err) 
+                    return fn(new Error('Cannot Find User'));
+                
+                hash(pass,user.salt,function(err,hash){
+                    if(err) return fn(err);
+                    if(hash == user.hash) return fn(null,user);
+                    fn(new Error('Invalid Password'));
+                });
+            }else{
+                return fn(new Error('Cannot Find User'));
+            }
+        
+        });
+    
+    }
 
 	var User = mongoose.model('user');
 
@@ -79,6 +102,32 @@
 			updateUsernames();
 		});
 
+		//check user on signup
+		socket.on("Existing User",function(data){
+			User.findOne({username:data.username},function(err,user){
+				if(err){
+					console.log(err);
+				}else if(user != null){
+					io.to(socket.id).emit('User Validation',{val:true});
+				}else{
+					io.to(socket.id).emit('User Validation',{val:false});
+				}
+			});
+		});
+
+		//validate user on Login
+		socket.on('Validate User',function(data){
+			console.log('Validate User : ' + data.username);
+			authenticate(data.username , data.password , function(err,user){
+				if(err){
+					io.to(socket.id).emit('Authentication',{val:false});
+				}else if(user != null){
+					io.to(socket.id).emit('Authentication',{val:true});
+				}else{
+					io.to(socket.id).emit('Authentication',{val:false});
+				}
+			});
+		})
 		function updateUsernames(){
 			io.sockets.emit('get users',users);
 		}

@@ -3,12 +3,30 @@
 <html>
 <head>
 	<title>Node Authentication</title>
-	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css"> <!-- load bootstrap css -->
-	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css"> <!-- load fontawesome -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"> 
+  	<script src="/socket.io/socket.io.js"></script>
+  	<script src="//code.jquery.com/jquery-1.11.3.min.js"></script><!-- load fontawesome -->
 	<style>
 		body 		{ padding-top:80px; }
 	</style>
+
 	<script>
+
+		var socket = io.connect();
+
+		function check(){
+			
+			var name = document.getElementById('var1').value;			
+			
+			socket.emit('Existing User',{username:name});
+			socket.on('User Validation', function(data){
+				if(data.val == false){
+					return socket.id;
+				}
+				else
+					return name;
+			});
+		}
 
 		function validate(){
 			var name = document.getElementById('var1').value;
@@ -32,8 +50,17 @@
 				document.form.password.value = "";
 				document.form.repass.value = "";
 				return false;
+			}if(check() == name){
+				alert('Username Already Exists \n Please select a different Usernane');
+				document.form.username.value = "";
+				document.form.password.value = "";
+				document.form.repass.value = "";
+				return false;
 			}
-			return true;
+			
+			window.onunload = function(){
+				socket.emit('disconnect');
+			}
 		}
 	</script>
 </head>
