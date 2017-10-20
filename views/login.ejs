@@ -6,6 +6,8 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"> 
   	<script src="/socket.io/socket.io.js"></script>
   	<script src="//code.jquery.com/jquery-1.11.3.min.js"></script><!-- load fontawesome -->
+  	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+  	<link rel="stylesheet" href="style.css" />
 	<style>
 		body 		{ padding-top:80px; }
 	</style>
@@ -13,8 +15,7 @@
 
 		var socket = io.connect();
 
-		var dec = true;
-		function validate(){
+		function validate(env){
 			var name = document.getElementById('var1').value;
 			var pass = document.myform.password.value;
 			if(name == "" || name == null){
@@ -31,21 +32,27 @@
 			}else{
 
 				socket.emit('Validate User',{username:name , password:pass});
-						
+
 				socket.on('Authentication',function(data){
-					
-					console.log(data.val + ' , ');
-					dec = data.val;
+					data = JSON.parse(data);
+					console.log(data);
+					if(data.val == true)
+						return true;
+					else{
+						env.preventDefault();
+						alert('Invalid Username and Password');
+						document.myform.username.value = "";
+						document.myform.password.value = "";
+						return false;		
+					}
 				});
+				console.log('Outside Authentication');
 			}
-			console.log(dec);
-			return dec;
 		}
 	</script>
 </head>
 <body>
 <div class="container">
-
 <div class="col-sm-6 col-sm-offset-3">
 
 	<h1><span class="fa fa-sign-in"></span> Login</h1>
@@ -56,7 +63,7 @@
 	<% } %>
 
 	<!-- LOGIN FORM -->
-	<form action="/Login" method="post" name = "myform" onsubmit = "return validate()">
+	<form action="/Login" method="post" name = "myform" onsubmit = "return validate(event) ;">
 		<div class="form-group">
 			<label>Username</label>
 			<input type="text" class="form-control" name="username" id = "var1">
@@ -67,6 +74,7 @@
 		</div>
 
 		<button type="submit" class="btn btn-warning btn-lg">Login</button>
+		
 	</form>
 
 	<hr>

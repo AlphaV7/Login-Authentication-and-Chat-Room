@@ -120,11 +120,11 @@
 			console.log('Validate User : ' + data.username);
 			authenticate(data.username , data.password , function(err,user){
 				if(err){
-					io.to(socket.id).emit('Authentication',{val:false});
+					io.to(socket.id).emit('Authentication',JSON.stringify({val:false}));
 				}else if(user != null){
-					io.to(socket.id).emit('Authentication',{val:true});
+					io.to(socket.id).emit('Authentication',JSON.stringify({val:true}));
 				}else{
-					io.to(socket.id).emit('Authentication',{val:false});
+					io.to(socket.id).emit('Authentication',JSON.stringify({val:false}));
 				}
 			});
 		})
